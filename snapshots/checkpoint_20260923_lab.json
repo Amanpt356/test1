@@ -1,0 +1,40 @@
+{
+  "checkpoint_id": "chk_20260923_lab_001",
+  "timestamp": "2026-09-23T12:10:30+05:30",
+  "status": "APPROVED",
+  "plan_ref": "Implementation Plan: 20-Workstation Enterprise Computer Lab Network",
+  "environment": {
+    "project_name": "netarchitect-computer-lab",
+    "catalog_file": "device_catalog.yaml",
+    "catalog_version": "1.0",
+    "catalog_name": "NetArchitect-Free-OpenSource-Inventory"
+  },
+  "guardrails_verified": {
+    "max_nodes_per_project": 15,
+    "current_planned_nodes": 7,
+    "disallow_duplicate_ips": true,
+    "enforce_management_subnet": "192.168.122.0/24",
+    "allowed_vlan_range": "1-4094",
+    "subnets": [
+      { "name": "Management", "cidr": "192.168.122.0/24", "vlan": 1 },
+      { "name": "Computer_Lab_Workstations", "cidr": "10.100.1.0/24", "vlan": 100 }
+    ],
+    "collision_check": "PASS_ZERO_COLLISIONS"
+  },
+  "nodes": [
+    { "hostname": "vyos-lab-gw", "template_id": "vyos-1.4-rolling", "mgmt_ip": "192.168.122.10" },
+    { "hostname": "ovs-lab-sw01", "template_id": "openvswitch", "mgmt_ip": "192.168.122.11" },
+    { "hostname": "ovs-lab-sw02", "template_id": "openvswitch", "mgmt_ip": "192.168.122.12" },
+    { "hostname": "lab-pc01", "template_id": "alpine-host", "ip": "10.100.1.11" },
+    { "hostname": "lab-pc02", "template_id": "alpine-host", "ip": "10.100.1.12" },
+    { "hostname": "lab-pc03", "template_id": "alpine-host", "ip": "10.100.1.13" },
+    { "hostname": "lab-pc04", "template_id": "alpine-host", "ip": "10.100.1.14" }
+  ],
+  "workspace_files_snapshot": {
+    "device_catalog.yaml": {
+      "path": "device_catalog.yaml",
+      "exists": true
+    }
+  },
+  "lock_status": "IMMUTABLE"
+}

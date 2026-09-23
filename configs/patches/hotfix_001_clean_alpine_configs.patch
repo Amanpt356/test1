@@ -1,0 +1,10 @@
+# Hotfix Patch: INC-20260923-001
+# Target: configs/lab-pc01.cfg .. lab-pc04.cfg & test_reachability.py
+# Purpose: Eliminate redundant inline IP duplication in Alpine host init scripts and normalize unique node IP inspection.
+
+--- a/configs/lab-pc01.cfg
++++ b/configs/lab-pc01.cfg
+@@ -19,3 +19,2 @@
+ ifdown eth0 2>/dev/null || true
+-ifup eth0 2>/dev/null || ip addr add 10.100.1.11/24 dev eth0; ip link set eth0 up; ip route add default via 10.100.1.1
++ifup eth0

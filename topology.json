@@ -1,0 +1,247 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "name": "NetArchitect-Computer-Lab",
+  "project_id": "proj-lab-20-nodes",
+  "auto_start": true,
+  "nodes": [
+    {
+      "node_id": "c1f7a01a-6e21-4d98-883a-101010000001",
+      "name": "vyos-lab-gw",
+      "node_type": "qemu",
+      "compute_id": "local",
+      "template_id": "vyos-1.4-rolling",
+      "x": 0,
+      "y": -160,
+      "z": 1,
+      "label": {
+        "text": "vyos-lab-gw (Router/DHCP)",
+        "x": 0,
+        "y": -25
+      },
+      "properties": {
+        "ram": 2048,
+        "cpus": 1,
+        "adapters": 4,
+        "qemu_path": "/usr/bin/qemu-system-x86_64"
+      }
+    },
+    {
+      "node_id": "c1f7a01a-6e21-4d98-883a-101010000002",
+      "name": "ovs-lab-sw01",
+      "node_type": "docker",
+      "compute_id": "local",
+      "template_id": "openvswitch",
+      "x": -220,
+      "y": 0,
+      "z": 1,
+      "label": {
+        "text": "ovs-lab-sw01 (Switch Rack 1)",
+        "x": 0,
+        "y": -25
+      },
+      "properties": {
+        "adapters": 8,
+        "image": "gns3/openvswitch:latest"
+      }
+    },
+    {
+      "node_id": "c1f7a01a-6e21-4d98-883a-101010000003",
+      "name": "ovs-lab-sw02",
+      "node_type": "docker",
+      "compute_id": "local",
+      "template_id": "openvswitch",
+      "x": 220,
+      "y": 0,
+      "z": 1,
+      "label": {
+        "text": "ovs-lab-sw02 (Switch Rack 2)",
+        "x": 0,
+        "y": -25
+      },
+      "properties": {
+        "adapters": 8,
+        "image": "gns3/openvswitch:latest"
+      }
+    },
+    {
+      "node_id": "c1f7a01a-6e21-4d98-883a-101010000004",
+      "name": "lab-pc01",
+      "node_type": "docker",
+      "compute_id": "local",
+      "template_id": "alpine-host",
+      "x": -320,
+      "y": 180,
+      "z": 1,
+      "label": {
+        "text": "lab-pc01 (Workstation 1)",
+        "x": 0,
+        "y": 30
+      },
+      "properties": {
+        "adapters": 1,
+        "image": "alpine:latest"
+      }
+    },
+    {
+      "node_id": "c1f7a01a-6e21-4d98-883a-101010000005",
+      "name": "lab-pc02",
+      "node_type": "docker",
+      "compute_id": "local",
+      "template_id": "alpine-host",
+      "x": -140,
+      "y": 180,
+      "z": 1,
+      "label": {
+        "text": "lab-pc02 (Workstation 2)",
+        "x": 0,
+        "y": 30
+      },
+      "properties": {
+        "adapters": 1,
+        "image": "alpine:latest"
+      }
+    },
+    {
+      "node_id": "c1f7a01a-6e21-4d98-883a-101010000006",
+      "name": "lab-pc03",
+      "node_type": "docker",
+      "compute_id": "local",
+      "template_id": "alpine-host",
+      "x": 140,
+      "y": 180,
+      "z": 1,
+      "label": {
+        "text": "lab-pc03 (Workstation 3)",
+        "x": 0,
+        "y": 30
+      },
+      "properties": {
+        "adapters": 1,
+        "image": "alpine:latest"
+      }
+    },
+    {
+      "node_id": "c1f7a01a-6e21-4d98-883a-101010000007",
+      "name": "lab-pc04",
+      "node_type": "docker",
+      "compute_id": "local",
+      "template_id": "alpine-host",
+      "x": 320,
+      "y": 180,
+      "z": 1,
+      "label": {
+        "text": "lab-pc04 (Workstation 4)",
+        "x": 0,
+        "y": 30
+      },
+      "properties": {
+        "adapters": 1,
+        "image": "alpine:latest"
+      }
+    }
+  ],
+  "links": [
+    {
+      "link_id": "link-gw-sw01-trunk",
+      "nodes": [
+        {
+          "node_id": "c1f7a01a-6e21-4d98-883a-101010000001",
+          "adapter_number": 1,
+          "port_number": 0,
+          "label": { "text": "eth1" }
+        },
+        {
+          "node_id": "c1f7a01a-6e21-4d98-883a-101010000002",
+          "adapter_number": 0,
+          "port_number": 0,
+          "label": { "text": "eth0" }
+        }
+      ]
+    },
+    {
+      "link_id": "link-sw01-sw02-trunk",
+      "nodes": [
+        {
+          "node_id": "c1f7a01a-6e21-4d98-883a-101010000002",
+          "adapter_number": 7,
+          "port_number": 0,
+          "label": { "text": "eth7" }
+        },
+        {
+          "node_id": "c1f7a01a-6e21-4d98-883a-101010000003",
+          "adapter_number": 7,
+          "port_number": 0,
+          "label": { "text": "eth7" }
+        }
+      ]
+    },
+    {
+      "link_id": "link-sw01-pc01",
+      "nodes": [
+        {
+          "node_id": "c1f7a01a-6e21-4d98-883a-101010000002",
+          "adapter_number": 1,
+          "port_number": 0,
+          "label": { "text": "eth1" }
+        },
+        {
+          "node_id": "c1f7a01a-6e21-4d98-883a-101010000004",
+          "adapter_number": 0,
+          "port_number": 0,
+          "label": { "text": "eth0" }
+        }
+      ]
+    },
+    {
+      "link_id": "link-sw01-pc02",
+      "nodes": [
+        {
+          "node_id": "c1f7a01a-6e21-4d98-883a-101010000002",
+          "adapter_number": 2,
+          "port_number": 0,
+          "label": { "text": "eth2" }
+        },
+        {
+          "node_id": "c1f7a01a-6e21-4d98-883a-101010000005",
+          "adapter_number": 0,
+          "port_number": 0,
+          "label": { "text": "eth0" }
+        }
+      ]
+    },
+    {
+      "link_id": "link-sw02-pc03",
+      "nodes": [
+        {
+          "node_id": "c1f7a01a-6e21-4d98-883a-101010000003",
+          "adapter_number": 1,
+          "port_number": 0,
+          "label": { "text": "eth1" }
+        },
+        {
+          "node_id": "c1f7a01a-6e21-4d98-883a-101010000006",
+          "adapter_number": 0,
+          "port_number": 0,
+          "label": { "text": "eth0" }
+        }
+      ]
+    },
+    {
+      "link_id": "link-sw02-pc04",
+      "nodes": [
+        {
+          "node_id": "c1f7a01a-6e21-4d98-883a-101010000003",
+          "adapter_number": 2,
+          "port_number": 0,
+          "label": { "text": "eth2" }
+        },
+        {
+          "node_id": "c1f7a01a-6e21-4d98-883a-101010000007",
+          "adapter_number": 0,
+          "port_number": 0,
+          "label": { "text": "eth0" }
+        }
+      ]
+    }
+  ]
+}

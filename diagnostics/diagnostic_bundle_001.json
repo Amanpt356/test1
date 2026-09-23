@@ -1,0 +1,21 @@
+{
+  "incident_id": "INC-20260923-001",
+  "timestamp": "2026-09-23T12:18:20+05:30",
+  "status": "FAILING",
+  "retry_count": 0,
+  "max_retries": 2,
+  "failed_test": "tests/test_reachability.py::test_zero_duplicate_ips",
+  "stderr": "Failed: Duplicate IP detected: 10.100.1.11 assigned to both 'lab-pc01' and 'lab-pc01'",
+  "active_cli_configs": {
+    "lab-pc01": "address 10.100.1.11 ... ip addr add 10.100.1.11/24 dev eth0",
+    "lab-pc02": "address 10.100.1.12 ... ip addr add 10.100.1.12/24 dev eth0",
+    "lab-pc03": "address 10.100.1.13 ... ip addr add 10.100.1.13/24 dev eth0",
+    "lab-pc04": "address 10.100.1.14 ... ip addr add 10.100.1.14/24 dev eth0"
+  },
+  "operational_telemetry": {
+    "vyos-lab-gw": "eth0: 192.168.122.10/24 (up), eth1.100: 10.100.1.1/24 (up)",
+    "ovs-lab-sw01": "br-lab: eth0 (trunk), eth1 (tag 100), eth2 (tag 100), eth7 (trunk)",
+    "ovs-lab-sw02": "br-lab: eth1 (tag 100), eth2 (tag 100), eth7 (trunk)"
+  },
+  "root_cause_analysis": "Duplicate regex matches of the same host IP within the same Alpine configuration file (once in /etc/network/interfaces and once in the inline fallback shell command) triggered intra-file collision in the test loop. Hotfix required: clean Alpine configuration script to avoid redundant inline declaration and ensure distinct node IP mapping."
+}
