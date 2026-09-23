@@ -1,0 +1,132 @@
+version: "1.0"
+catalog_name: "NetArchitect-Free-OpenSource-Inventory"
+
+inventory:
+  routers:
+    - vendor: "VyOS"
+      type: "vyos"
+      model: "VyOS 1.4 Rolling"
+      description: "Open-source Linux network OS supporting OSPF, BGP, NAT, and WireGuard."
+      gns3_template_id: "vyos-1.4-rolling"
+      node_type: "qemu"
+      cli_type: "vyos"
+      ram_mb: 2048
+      cpus: 1
+      default_interfaces:
+        - name: "eth0"
+          type: "ethernet"
+          purpose: "management_or_data"
+        - name: "eth1"
+          type: "ethernet"
+          purpose: "data"
+        - name: "eth2"
+          type: "ethernet"
+          purpose: "data"
+        - name: "eth3"
+          type: "ethernet"
+          purpose: "data"
+      supported_protocols:
+        - "ospf"
+        - "bgp"
+        - "static_routing"
+        - "nat"
+        - "dhcp_server"
+        - "wireguard"
+
+    - vendor: "FRRouting"
+      type: "frr"
+      model: "FRR Docker Container"
+      description: "Ultra-lightweight Linux IP routing protocol suite (OSPF, BGP, RIP, IS-IS)."
+      gns3_template_id: "frr-docker"
+      node_type: "docker"
+      cli_type: "vtysh"
+      ram_mb: 512
+      cpus: 1
+      default_interfaces:
+        - name: "eth0"
+          type: "ethernet"
+        - name: "eth1"
+          type: "ethernet"
+        - name: "eth2"
+          type: "ethernet"
+      supported_protocols:
+        - "ospf"
+        - "bgp"
+        - "rip"
+
+  switches:
+    - vendor: "Open vSwitch"
+      type: "ovs"
+      model: "OVS Layer 2/3 Switch"
+      description: "Virtual switch supporting 802.1Q VLAN tagging and trunking."
+      gns3_template_id: "openvswitch"
+      node_type: "docker"
+      cli_type: "openflow"
+      ram_mb: 512
+      cpus: 1
+      default_interfaces:
+        - name: "eth0"
+          type: "ethernet"
+        - name: "eth1"
+          type: "ethernet"
+        - name: "eth2"
+          type: "ethernet"
+        - name: "eth3"
+          type: "ethernet"
+        - name: "eth4"
+          type: "ethernet"
+        - name: "eth5"
+          type: "ethernet"
+        - name: "eth6"
+          type: "ethernet"
+        - name: "eth7"
+          type: "ethernet"
+      supported_features:
+        - "vlan_tagging"
+        - "trunking"
+        - "lacp"
+        - "openflow"
+
+  firewalls:
+    - vendor: "iptables-router"
+      type: "linux_fw"
+      model: "Alpine Linux Security Gateway"
+      description: "Lightweight firewall container for stateful packet inspection and NAT policies."
+      gns3_template_id: "alpine-firewall"
+      node_type: "docker"
+      cli_type: "bash"
+      ram_mb: 256
+      cpus: 1
+      default_interfaces:
+        - name: "eth0"
+          type: "ethernet"
+        - name: "eth1"
+          type: "ethernet"
+      supported_features:
+        - "iptables_nat"
+        - "stateful_acl"
+
+  hosts:
+    - vendor: "Alpine Linux"
+      type: "alpine"
+      model: "Alpine Workload Node"
+      description: "Lightweight container (~5MB) for automated reachability verification."
+      gns3_template_id: "alpine-host"
+      node_type: "docker"
+      cli_type: "bash"
+      ram_mb: 128
+      cpus: 1
+      default_interfaces:
+        - name: "eth0"
+          type: "ethernet"
+      supported_tools:
+        - "ping"
+        - "traceroute"
+        - "curl"
+        - "iperf"
+
+guardrails:
+  max_nodes_per_project: 15
+  disallow_duplicate_ips: true
+  enforce_management_subnet: "192.168.122.0/24"
+  allowed_vlan_range: "1-4094"
