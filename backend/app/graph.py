@@ -10,8 +10,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.messages import SystemMessage, HumanMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
 
@@ -25,6 +23,7 @@ from backend.app.tools import (
     rollback_state,
     create_github_pr
 )
+from backend.app.llm_engine import LLMEngine
 
 SYSTEM_PROMPT = """# SYSTEM PROMPT: NetArchitect AI (Forward-Deployed Network Agent)
 
@@ -64,15 +63,7 @@ Your purpose is to translate high-level natural language intents into validated,
 4. Trigger Pytest simulation verification suite.
 """
 
-def get_llm():
-    api_key = os.getenv("GOOGLE_API_KEY")
-    if api_key:
-        return ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",
-            google_api_key=api_key,
-            temperature=0.1
-        )
-    return None
+llm_engine = LLMEngine()
 
 
 class NetArchitectState(TypedDict):
@@ -93,41 +84,11 @@ def generate_plan_node(state: NetArchitectState):
     and produces structured Implementation Plan Artifact with status PENDING_APPROVAL.
     """
     catalog = get_device_catalog()
-    llm = get_llm()
-    prompt_text = (
-        f"Intent: {state['user_prompt']}\n\n"
-        f"Active Hardware Inventory & Guardrails:\n{json.dumps(catalog, indent=2)}\n\n"
-        "Generate the structured Implementation Plan artifact."
+    plan_content = llm_engine.generate_plan(
+        intent=state["user_prompt"],
+        catalog=catalog,
+        system_prompt=SYSTEM_PROMPT
     )
-
-    if llm:
-        messages = [
-            SystemMessage(content=SYSTEM_PROMPT),
-            HumanMessage(content=prompt_text)
-        ]
-        response = llm.invoke(messages)
-        plan_content = response.content
-    else:
-        # Deterministic fallback plan if API key is not populated in local environment
-        plan_content = (
-            f"# Implementation Plan: Automated Topology for {state['user_prompt']}\n"
-            "**Status:** PENDING_APPROVAL\n\n"
-            "## 1. Scope & Topology Blueprint\n"
-            "- **Nodes:** vyos-lab-gw (vyos-1.4-rolling), ovs-lab-sw01 (openvswitch), "
-            "ovs-lab-sw02 (openvswitch), lab-pc01..04 (alpine-host)\n"
-            "- **Links:** Gateway-to-Switch trunks and access workstations\n\n"
-            "## 2. IP Schema & Subnet Allocation\n"
-            "- **Management Subnet:** 192.168.122.0/24\n"
-            "- **VLANs / Subnets:** VLAN 100 -> 10.100.1.0/24\n\n"
-            "## 3. Control Plane Protocols & Safety Policies\n"
-            "- **Routing Protocols:** Static default route & OSPF Area 0 readiness\n"
-            "- **ACLs / NAT:** Outbound NAT masquerade\n\n"
-            "## 4. Sequential Execution Actions\n"
-            "1. Initialize GNS3 project sandbox via REST API.\n"
-            "2. Provision node resources and interface links.\n"
-            "3. Apply vendor CLI configs via SSH.\n"
-            "4. Trigger Pytest simulation verification suite."
-        )
 
     return {
         "implementation_plan": plan_content,
@@ -144,14 +105,11 @@ def deploy_gns3_node(state: NetArchitectState):
     project_meta = create_gns3_project("NetArchitect-Computer-Lab")
     project_id = project_meta["project_id"]
 
-    # Provision topology components via tools
-    catalog = get_device_catalog()
-
     # Load active topology.json if present
     workspace_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     topo_file = os.path.join(workspace_root, "topology.json")
     if os.path.exists(topo_file):
-        with open(topo_file, "r") as f:
+        with open(topo_file, "r", encoding="utf-8") as f:
             topology_data = json.load(f)
     else:
         topology_data = {"nodes": [], "links": []}
@@ -181,7 +139,6 @@ def run_simulation_tests_node(state: NetArchitectState):
     retry_count = state.get("retry_count", 0)
 
     if not results.get("passed") and retry_count < 2:
-        # Self-healing remediation loop
         retry_count += 1
         results["remediation_attempt"] = retry_count
 
